@@ -5,6 +5,6 @@ services:
     ports: 
       - "5432:5432"
     environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: app_distributor
+      POSTGRES_PASSWORD: distributor
+      POSTGRES_USER: distributor
       POSTGRES_DB: uet_app_distributor
