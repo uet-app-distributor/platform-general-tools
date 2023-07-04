@@ -1,6 +1,7 @@
 services:
   database:
     image: postgres:15.3
+    container_name: postgres
     restart: always
     ports: 
       - "5432:5432"
@@ -8,3 +9,16 @@ services:
       POSTGRES_PASSWORD: distributor
       POSTGRES_USER: distributor
       POSTGRES_DB: uet_app_distributor
+  
+  distributor:
+    image: thainm/uet-app-distributor:latest
+    container_name: distributor
+    ports:
+      - "8000:8000"
+    environment:
+      DB_NAME: uet_app_distributor
+      DB_USER: distributor
+      DB_PASSWORD: distributor
+      DB_HOST: postgres
+      DB_PORT: 5432
+
