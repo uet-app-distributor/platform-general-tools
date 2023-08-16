@@ -2,6 +2,7 @@ apiVersion: "acid.zalan.do/v1"
 kind: postgresql
 metadata:
   name: uad-postgres-cluster
+  namespace: uet-app-distributor
 spec:
   teamId: "acid"
   volume:
