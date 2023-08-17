@@ -5,6 +5,7 @@ These are tools using on our remote servers:
   - core/helm
   - core/kubectl
   - community/nfs
+  - ingress
 - git
 - apt packages:
   - nfs-common
