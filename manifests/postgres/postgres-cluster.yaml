@@ -1,0 +1,22 @@
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: uad-postgres-cluster
+  namespace: uet-app-distributor
+spec:
+  teamId: "acid"
+  volume:
+    storageClass: nfs
+    size: 10Gi
+  numberOfInstances: 2
+  users:
+    distributor: # database owner
+      - superuser
+      - createdb
+    sample_app_user: [] # role for application sample_app
+  databases:
+    uet_app_distributor: distributor # dbname: owner
+  preparedDatabases:
+    bar: {}
+  postgresql:
+    version: "15"
