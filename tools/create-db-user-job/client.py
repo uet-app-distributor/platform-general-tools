@@ -1,6 +1,6 @@
 import os
-import yaml
 import psycopg2
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 from logger import logger
 
@@ -22,8 +22,7 @@ class PostgresClient:
         )
 
     def perform_query(self, query):
+        self.connector.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         with self.connector.cursor() as cursor:
             logger.info(f"Running query: {query}")
             cursor.execute(query)
-            result = cursor.fetchall()
-        return result
