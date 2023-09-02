@@ -5,6 +5,9 @@ metadata:
   namespace: uet-app-distributor
 spec:
   teamId: "acid"
+  patroni:
+    pg_hba:
+      - host      all  all  0.0.0.0/0   md5
   volume:
     storageClass: nfs
     size: 10Gi
