@@ -13,5 +13,11 @@ def initial_new_customer_app_database():
     psql_client.perform_query(f"GRANT ALL PRIVILEGES ON DATABASE {new_user} TO {new_user}")
 
 
+def initial_new_customer_app_dns_records():
+    cf_client = client.CloudflareClient()
+    cf_client.create_dns_record()
+
+
 if __name__ == "__main__":
-    initial_new_customer_app_database()
+    # initial_new_customer_app_database()
+    initial_new_customer_app_dns_records()
