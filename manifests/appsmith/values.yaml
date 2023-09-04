@@ -35,8 +35,8 @@ mongodb:
 ## @param global.namespaceOverride Override the namespace for resource deployed by the chart, but can itself be overridden by the local namespaceOverride
 ##
 global:
-  storageClass: ""
-  namespaceOverride: ""
+  storageClass: "nfs"
+  namespaceOverride: "appsmith"
 ## @param fullnameOverride String to fully override appsmith.fullname template
 ##
 fullnameOverride: ""
