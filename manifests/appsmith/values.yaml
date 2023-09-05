@@ -16,7 +16,7 @@ mongodb:
   auth:
     rootUser: root
     rootPassword: password
-  replicaCount: 2
+  replicaCount: 1
   architecture: "replicaset"
   replicaSetName: rs0
   nodeSelector: {}
@@ -293,7 +293,7 @@ applicationConfig:
   APPSMITH_OAUTH2_GITHUB_CLIENT_ID: ""
   APPSMITH_OAUTH2_GITHUB_CLIENT_SECRET: ""
   APPSMITH_FORM_LOGIN_DISABLED: ""
-  APPSMITH_SIGNUP_DISABLED: ""
+  APPSMITH_SIGNUP_DISABLED: "true"
   APPSMITH_CLIENT_LOG_LEVEL: ""
   APPSMITH_MAIL_ENABLED: ""
   APPSMITH_MAIL_HOST: ""
