@@ -19,5 +19,5 @@ def initial_new_customer_app_dns_records():
 
 
 if __name__ == "__main__":
-    # initial_new_customer_app_database()
+    initial_new_customer_app_database()
     initial_new_customer_app_dns_records()
