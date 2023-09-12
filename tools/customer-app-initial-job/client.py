@@ -31,7 +31,7 @@ class CloudflareClient:
 
             backend_payload = {
                 "content": UAD_DOMAIN,
-                "name": f"api.{os.getenv('CF_CUSTOMER_APP_CNAME_RECORD')}",
+                "name": f"api-{os.getenv('CF_CUSTOMER_APP_CNAME_RECORD')}",
                 "proxied": True,
                 "type": "CNAME",
                 "ttl": 1
@@ -47,11 +47,11 @@ class CloudflareClient:
 
             logger.info(f"Adding subdomain {os.getenv('CF_CUSTOMER_APP_CNAME_RECORD')}")
             response = requests.request("POST", url, json=frontend_payload, headers=self.default_header)
-            logger.info(f"CNAME record status: {response.json()['success']}")
+            logger.info(response.json())
 
             response = requests.request("POST", url, json=backend_payload, headers=self.default_header)
-            logger.info(f"Add subdomain api.{os.getenv('CF_CUSTOMER_APP_CNAME_RECORD')}")
-            logger.info(f"CNAME record status: {response.json()['success']}")
+            logger.info(f"Add subdomain api-{os.getenv('CF_CUSTOMER_APP_CNAME_RECORD')}")
+            logger.info(response.json())
 
 
 class PostgresClient:
