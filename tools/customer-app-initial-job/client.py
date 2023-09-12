@@ -70,8 +70,10 @@ class PostgresClient:
             password=self.db_password,
         )
 
-    def perform_query(self, query):
+    def perform_query(self, query, get_result=False):
         self.connector.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         with self.connector.cursor() as cursor:
             logger.info(f"Running query: {query}")
             cursor.execute(query)
+            if get_result:
+                return cursor.fetchone()
