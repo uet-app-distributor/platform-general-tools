@@ -7,20 +7,35 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from settings import UAD_DOMAIN, CF_API_URL
 
 
+class CustomerAppInfo:
+    def __init__(self, customer_name="sample-customer", customer_app="sample-webapp"):
+        self.customer_name = os.getenv("CUSTOMER_NAME") or customer_name
+        self.customer_app = os.getenv("CUSTOMER_APP") or customer_app
+        self.app_id = f"{self.customer_name}-{customer_app}"
+        self.customer_managed = os.getenv("CUSTOMER_MANAGED") == "true"
+
+
 class CloudflareClient:
-    def __init__(self, api_key="thisisaapikey", api_email="anemail@email.com"):
+    def __init__(
+        self, app_info, api_key="thisisaapikey", api_email="anemail@email.com"
+    ):
+        self.app_info = app_info
         self.api_email = os.getenv("CF_API_EMAIL") or api_email
         self.api_key = os.getenv("CF_API_KEY") or api_key
         self.default_header = {
             "Content-Type": "application/json",
             "X-Auth-Key": self.api_key,
-            "X-Auth-Email": self.api_email
+            "X-Auth-Email": self.api_email,
         }
-    
+
     def _get_zone_identifiers(self):
         url = f"{CF_API_URL}/zones"
         response = requests.request("GET", url, headers=self.default_header)
-        zone_ids = [result["id"] for result in response.json()["result"] if result["name"] == UAD_DOMAIN]
+        zone_ids = [
+            result["id"]
+            for result in response.json()["result"]
+            if result["name"] == UAD_DOMAIN
+        ]
         return zone_ids
 
     def create_dns_record(self):
@@ -29,29 +44,48 @@ class CloudflareClient:
         for zone_id in zone_ids:
             url = f"{CF_API_URL}/zones/{zone_id}/dns_records"
 
-            backend_payload = {
-                "content": UAD_DOMAIN,
-                "name": f"api-{os.getenv('CF_CUSTOMER_APP_CNAME_RECORD')}",
-                "proxied": True,
-                "type": "CNAME",
-                "ttl": 1
-            }
+            if not self.app_info.customer_managed:
+                frontend_payload = {
+                    "content": UAD_DOMAIN,
+                    "name": os.getenv("CF_CUSTOMER_APP_CNAME_RECORD"),
+                    "proxied": True,
+                    "type": "CNAME",
+                    "ttl": 1,
+                }
 
-            frontend_payload = {
-                "content": UAD_DOMAIN,
-                "name": os.getenv("CF_CUSTOMER_APP_CNAME_RECORD"),
-                "proxied": True,
-                "type": "CNAME",
-                "ttl": 1
-            }
+                backend_payload = {
+                    "content": UAD_DOMAIN,
+                    "name": f"api-{os.getenv('CF_CUSTOMER_APP_CNAME_RECORD')}",
+                    "proxied": True,
+                    "type": "CNAME",
+                    "ttl": 1,
+                }
+            else:
+                frontend_payload = {
+                    "content": os.getenv("CUSTOMER_INSTANCE_PUBLIC_IP"),
+                    "name": f"{self.app_info.app_id}.{UAD_DOMAIN}",
+                    "proxied": True,
+                    "type": "A",
+                    "ttl": 1,
+                }
 
-            logger.info(f"Adding subdomain {os.getenv('CF_CUSTOMER_APP_CNAME_RECORD')}")
-            response = requests.request("POST", url, json=frontend_payload, headers=self.default_header)
-            logger.info(response.json())
+                backend_payload = {
+                    "content": os.getenv("CUSTOMER_INSTANCE_PUBLIC_IP"),
+                    "name": f"api-{self.app_info.app_id}.{UAD_DOMAIN}",
+                    "proxied": True,
+                    "type": "A",
+                    "ttl": 1,
+                }
 
-            response = requests.request("POST", url, json=backend_payload, headers=self.default_header)
-            logger.info(f"Add subdomain api-{os.getenv('CF_CUSTOMER_APP_CNAME_RECORD')}")
-            logger.info(response.json())
+            self._make_dns_request(url, frontend_payload)
+            self._make_dns_request(url, backend_payload)
+
+    def _make_dns_request(self, url, payload):
+        response = requests.request(
+            "POST", url, json=payload, headers=self.default_header
+        )
+        logger.info(f"Added {payload['name']} subdomain ...")
+        logger.info(response.json())
 
 
 class PostgresClient:
