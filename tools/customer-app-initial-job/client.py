@@ -11,7 +11,7 @@ class CustomerAppInfo:
     def __init__(self, customer_name="sample-customer", customer_app="sample-webapp"):
         self.customer_name = os.getenv("CUSTOMER_NAME") or customer_name
         self.customer_app = os.getenv("CUSTOMER_APP") or customer_app
-        self.app_id = f"{self.customer_name}-{customer_app}"
+        self.app_id = f"{self.customer_name}-{self.customer_app}"
         self.customer_managed = os.getenv("CUSTOMER_MANAGED") == "true"
 
 
