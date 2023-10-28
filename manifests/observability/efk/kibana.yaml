@@ -9,3 +9,25 @@ spec:
   count: 1
   elasticsearchRef:
     name: uad-elasticsearch
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kibana-ingress
+  namespace: observability
+spec:
+  rules:
+    - host: kibana.uet-app-distributor.site
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: uad-kibana-kb-http
+                port:
+                  number: 5601
