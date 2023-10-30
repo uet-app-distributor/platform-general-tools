@@ -21,3 +21,7 @@ spec:
               requests:
                 storage: 5Gi
             storageClassName: nfs
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
